@@ -61,7 +61,7 @@ function setup()
 		size: 80
 	}
 
-	trees_x = [100, 300, 500, 700, 900];
+	trees_x = [100, 350, 500, 700, 900, 1100, 1300, 1500, 1700];
 	treePos_y = height/2;
 }
 
@@ -76,6 +76,17 @@ function draw()
 	noStroke();
 	fill(0,155,0);
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
+
+	for (let index = 0; index < trees_x.length; index++) {
+		fill(139, 69, 19);
+		rect(trees_x[index], treePos_y + 45, 50, 100);
+		fill(0, 145, 0);
+		triangle(trees_x[index] - 30, treePos_y + 50, trees_x[index] + 80, treePos_y + 50, trees_x[index] + 25, treePos_y - 50);
+		fill(0, 150, 0);
+		triangle(trees_x[index] - 30, treePos_y + 10, trees_x[index] + 80, treePos_y + 10, trees_x[index] + 25, treePos_y - 80);
+		fill(0, 155, 0);
+		triangle(trees_x[index] - 30, treePos_y - 30, trees_x[index] + 80, treePos_y - 30, trees_x[index] + 25, treePos_y - 110);
+	}
 
 	//draw the canyon
 	if (!collectable.collected) {
@@ -94,18 +105,6 @@ function draw()
 	//blue triangle going to the botton of the screen
 	// draw a canyon
 	rect(canyon.x_pos, 432, canyon.width, 144);
-
-	for (let index = 0; index < trees_x.length; index++) {
-		fill(139, 69, 19);
-		rect(trees_x[index], treePos_y + 45, 50, 100);
-		fill(0, 145, 0);
-		triangle(trees_x[index] - 30, treePos_y + 50, trees_x[index] + 80, treePos_y + 50, trees_x[index] + 25, treePos_y - 50);
-		fill(0, 150, 0);
-		triangle(trees_x[index] - 30, treePos_y + 10, trees_x[index] + 80, treePos_y + 10, trees_x[index] + 25, treePos_y - 80);
-		fill(0, 155, 0);
-		triangle(trees_x[index] - 30, treePos_y - 30, trees_x[index] + 80, treePos_y - 30, trees_x[index] + 25, treePos_y - 110);
-	}
-
 
 	//the game character
 	if(isLeft && isFalling)
