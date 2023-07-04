@@ -28,6 +28,7 @@ let treePos_y;
 
 let clouds;
 let mountain;
+let collectables;
 
 function setup()
 {
@@ -88,6 +89,9 @@ function setup()
 function draw()
 {
 
+	///////////LOGIC CODE//////////
+
+	// Check if trees are on screen and alter the array accordingly
 	for (let index = 0; index < trees_x.length; index++) {
 		if ((trees_x[index] > canyon.x_pos && trees_x[index] < canyon.x_pos + canyon.width)
 		|| (trees_x[index] + 70 > canyon.x_pos && trees_x[index] + 70 < canyon.x_pos + canyon.width)) {
@@ -104,6 +108,7 @@ function draw()
 		}
 	}
 
+	// Check if clouds are on screen and alter the array accordingly
 	for (let index = 0; index < clouds.length; index++) {
 		if (clouds[index].x_pos < -100) {
 			clouds.splice(0, 1);
@@ -123,9 +128,15 @@ function draw()
 		}
 	}
 
-	// mountains
+	
+	// Check if mountain is on screen
+	if (mountain.x_pos < -500) {
+		mountain.x_pos = width + 10;
+	} else if (mountain.x_pos > width + 550) {
+		mountain.x_pos = -480;
+	}
 
-
+	// Check if canyon is on screen
 	if (canyon.x_pos < -150) {
 		canyon.x_pos = width + 10;
 	} else if (canyon.x_pos > width + 150) {
@@ -138,6 +149,7 @@ function draw()
 
 	background(100,155,255); //fill the sky blue
 
+	// Draw the mountains.
 	fill(200);
 	triangle(mountain.x_pos, mountain.y_pos, mountain.x_pos + 320, mountain.y_pos, mountain.x_pos + 170, mountain.y_pos - 332);
 	fill(180);
@@ -151,7 +163,7 @@ function draw()
 	triangle(mountain.x_pos + 215, mountain.y_pos - 152, mountain.x_pos + 250, mountain.y_pos - 232, mountain.x_pos + 275, mountain.y_pos - 172);
 	triangle(mountain.x_pos + 144, mountain.y_pos - 280, mountain.x_pos + 206, mountain.y_pos - 250, mountain.x_pos + 170, mountain.y_pos - 332);
 
-	// clouds
+	// Draw the clouds.
 	for (let index = 0; index < clouds.length; index++) {
 		fill(255, 255, 255);
 		ellipse(clouds[index].x_pos, clouds[index].y_pos, 80, 80);
@@ -167,6 +179,7 @@ function draw()
 	fill(0,155,0);
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 
+	// Draw the Trees
 	for (let index = 0; index < trees_x.length; index++) {
 		fill(139, 69, 19);
 		rect(trees_x[index], treePos_y + 45, 50, 100);
