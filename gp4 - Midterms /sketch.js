@@ -69,6 +69,11 @@ function draw()
 {
 
 	for (let index = 0; index < trees_x.length; index++) {
+		if ((trees_x[index] > canyon.x_pos && trees_x[index] < canyon.x_pos + canyon.width)
+		|| (trees_x[index] + 70 > canyon.x_pos && trees_x[index] + 70 < canyon.x_pos + canyon.width)) {
+			trees_x.splice(index, 1);
+			continue;
+		}
 		if (trees_x[index] < -100) {
 			trees_x.splice(0, 1);
 			trees_x.push(width + 50);
@@ -78,6 +83,14 @@ function draw()
 			trees_x.unshift(-50);
 		}
 	}
+
+	if (canyon.x_pos < -150) {
+		canyon.x_pos = width + 10;
+	} else if (canyon.x_pos > width + 150) {
+		canyon.x_pos = -50;
+	}
+
+	
 
 	///////////DRAWING CODE//////////
 
