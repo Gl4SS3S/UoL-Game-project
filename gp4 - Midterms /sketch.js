@@ -61,12 +61,23 @@ function setup()
 		size: 80
 	}
 
-	trees_x = [100, 350, 500, 700, 900, 1100, 1300, 1500, 1700];
+	trees_x = [100, 350, 500, 700, 900];
 	treePos_y = height/2;
 }
 
 function draw()
 {
+
+	for (let index = 0; index < trees_x.length; index++) {
+		if (trees_x[index] < -100) {
+			trees_x.splice(0, 1);
+			trees_x.push(width + 50);
+		} 
+		else if (trees_x[index] > width + 100) {
+			trees_x.pop();
+			trees_x.unshift(-50);
+		}
+	}
 
 	///////////DRAWING CODE//////////
 
@@ -203,6 +214,7 @@ function draw()
 
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
+
 	if (isLeft == true) {
 		for (let index = 0; index < trees_x.length; index++) {
 			trees_x[index] += 5;
