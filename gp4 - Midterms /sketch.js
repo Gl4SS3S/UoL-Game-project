@@ -193,7 +193,7 @@ function draw()
 
 	
 
-	//draw the canyon
+	// Draw the collectable items
 	if (!collectable.collected) {
 		fill(255, 215, 0);
 		ellipse(collectable.x_pos, collectable.y_pos, collectable.size, collectable.size);
@@ -206,9 +206,9 @@ function draw()
 	}
 
 
+	// Draw a canyon
 	fill(100, 155, 255);
-	//blue triangle going to the botton of the screen
-	// draw a canyon
+	//blue rectangle going to the botton of the screen
 	rect(canyon.x_pos, 432, canyon.width, 144);
 
 	//the game character
@@ -309,6 +309,7 @@ function draw()
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
 
+	// If character is moving left, move the scenery to the right
 	if (isLeft == true) {
 		for (let index = 0; index < trees_x.length; index++) {
 			trees_x[index] += 5;
@@ -319,9 +320,9 @@ function draw()
 		canyon.x_pos += 5;
 		collectable.x_pos += 5;
 		mountain.x_pos += 1;
-		//gameChar_x -= 5;
 	}
 
+	// If character is moving right, move the scenery to the left
 	if (isRight == true) {
 		for (let index = 0; index < trees_x.length; index++) {
 			trees_x[index] -= 5;
@@ -332,7 +333,6 @@ function draw()
 		mountain.x_pos -= 1;
 		canyon.x_pos -= 5;
 		collectable.x_pos -= 5;
-		//gameChar_x += 5;
 	}
 
 	if (gameChar_x > canyon.x_pos && gameChar_x < canyon.x_pos + canyon.width) {
@@ -357,7 +357,6 @@ function keyPressed()
 {
 	// if statements to control the animation of the character when
 	// keys are pressed.
-
 	if (isPlummeting) {
 		console.log("Prevented Movement");
 		return;
