@@ -204,11 +204,21 @@ function draw()
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
 	if (isLeft == true) {
-		gameChar_x -= 5;
+		for (let index = 0; index < trees_x.length; index++) {
+			trees_x[index] += 5;
+		}
+		canyon.x_pos += 5;
+		collectable.x_pos += 5;
+		//gameChar_x -= 5;
 	}
 
 	if (isRight == true) {
-		gameChar_x += 5;
+		for (let index = 0; index < trees_x.length; index++) {
+			trees_x[index] -= 5;
+		}
+		canyon.x_pos -= 5;
+		collectable.x_pos -= 5;
+		//gameChar_x += 5;
 	}
 
 	if (gameChar_x > canyon.x_pos && gameChar_x < canyon.x_pos + canyon.width) {
