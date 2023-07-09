@@ -88,18 +88,7 @@ function setup()
 
 function draw()
 {
-
-	///////////LOGIC CODE//////////
-
-	// Check if canyon is on screen
-	if (canyon.x_pos < -150) {
-		canyon.x_pos = width + 10;
-	} else if (canyon.x_pos > width + 150) {
-		canyon.x_pos = -50;
-	}
-
 	
-
 	///////////DRAWING CODE//////////
 
 	background(100,155,255); //fill the sky blue
@@ -120,10 +109,7 @@ function draw()
 	// Draw the collectable items
 	drawCollectable();
 
-	// Draw a canyon - brown rectangle
-	fill(139,69,19);
-	//blue rectangle going to the botton of the screen
-	rect(canyon.x_pos, 432, canyon.width, 144);
+	drawCanyon();
 
 	//the game character
 	if(isLeft && isFalling)
@@ -412,4 +398,18 @@ function drawCollectable(){
 		fill(255, 255, 0);
 		ellipse(collectable.x_pos, collectable.y_pos, collectable.size - 30, collectable.size - 30);
 	}
+}
+
+function drawCanyon() {
+	// Check if canyon is on screen
+	if (canyon.x_pos < -150) {
+		canyon.x_pos = width + 10;
+	} else if (canyon.x_pos > width + 150) {
+		canyon.x_pos = -50;
+	}
+
+	// Draw a canyon - brown rectangle
+	fill(139,69,19);
+	//blue rectangle going to the botton of the screen
+	rect(canyon.x_pos, 432, canyon.width, 144);
 }
