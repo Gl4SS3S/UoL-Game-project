@@ -293,7 +293,7 @@ function draw()
 	if (gameChar_y < floorPos_y) {
 		gameChar_y += 4;
 		isFalling = true;
-	} else {
+	}  else {
 		isFalling = false;
 		isPlummeting = false;
 	}
