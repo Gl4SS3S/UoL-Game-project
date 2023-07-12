@@ -207,8 +207,8 @@ function draw()
 
 
 	// Draw a canyon
-	fill(100, 155, 255);
-	//blue rectangle going to the botton of the screen
+	fill(78, 53, 36);
+	//Brown rectangle going to the botton of the screen
 	rect(canyon.x_pos, 432, canyon.width, 144);
 
 	//the game character
