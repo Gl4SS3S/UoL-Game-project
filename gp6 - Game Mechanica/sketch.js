@@ -33,117 +33,32 @@ let mountain;
 let collectables;
 let canyons;
 
+let lives;
+let game_over;
+
 function setup()
 {
 	createCanvas(1024, 576);
 	floorPos_y = height * 3/4;
-	gameChar_x = width/2;
-	gameChar_y = floorPos_y;
+	
+	startGame();
 
-	isLeft = false;
-	isRight = false;
-	isFalling = false;
-	isPlummeting = false;
-
-	canyon = {
-		x_pos: width - 800, 
-		width: 100
-	}
-
-	collectable = {
-		x_pos: 150,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	}
-
-	collectables = [
-	{
-		x_pos: 450,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 750,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 1000,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 1600,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 2000,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	}
-]
-
-	mountain = {
-		x_pos: 280,
-		y_pos: 432,
-	}
-
-	clouds = [
-	{
-		x_pos: 150,
-		y_pos: 80,
-		size: 80
-	},
-	{
-		x_pos: 450,
-		y_pos: 80,
-		size: 80
-	},
-	{
-		x_pos: 750,
-		y_pos: 80,
-		size: 80
-	},
-	{
-		x_pos: 1000,
-		y_pos: 80,
-		size: 80
-	}
-]
-
-	canyons = [
-	{
-		x_pos: width - 800,
-		width: 100
-	},
-	{
-		x_pos: width - 200,
-		width: 100
-	}
-]
-
-	trees_x = [100, 350, 500, 700, 900];
-	treePos_y = height/2;
-
-	game_score = 0;
-
-	flagpole = {
-		x_pos: 2300,
-		isReached: false
-	}
+	lives = 3;
 }
 
 function draw()
 {
 	
 	///////////DRAWING CODE//////////
+
+	if (game_over) {
+		fill(255, 0, 0);
+		textSize(50);
+		text("Game Over", width/2 - 100, height/2);
+		textSize(30);
+		text("Press space to continue", width/2 - 150, height/2 + 50);
+		return;
+	}
 
 	background(100,155,255); //fill the sky blue
 
@@ -183,6 +98,8 @@ function draw()
 			isPlummeting = false;
 		}
 	}
+
+	checkPlayerDie();
 
 	checkFlagpole();
 	// Draw the flagpole
@@ -334,11 +251,17 @@ function draw()
 	// Green text
 	fill(0, 255, 0);
 	text('Game Score: ' + game_score, 10, 30);
+	fill(255, 0, 0);
+	text('Lives: ' + lives, 10, 60);
 }
 
 
 function keyPressed()
 {
+	if (game_over && keyCode == 32) {
+		startGame();
+		lives = 3;
+	}
 	// if statements to control the animation of the character when
 	// keys are pressed.
 	if (!isPlummeting) {
@@ -513,9 +436,127 @@ function checkFlagpole() {
 	if (flagpole.isReached == true) {
 		return;
 	}
-	
+
 	// If character is at flagpole, set flagpole.isReached to true
 	if (gameChar_x > flagpole.x_pos && gameChar_x < flagpole.x_pos + 50) {
 		flagpole.isReached = true;
 	}
 }
+
+function checkPlayerDie() {
+	if (gameChar_y - 150 > height) {
+		lives -= 1;
+		if (lives > 0) {
+			startGame();
+		} else {
+			game_over = true;
+		}
+	}
+}
+
+function startGame() {
+	gameChar_x = width/2;
+	gameChar_y = floorPos_y;
+
+	isLeft = false;
+	isRight = false;
+	isFalling = false;
+	isPlummeting = false;
+
+	canyon = {
+		x_pos: width - 800, 
+		width: 100
+	}
+
+	collectable = {
+		x_pos: 150,
+		y_pos: 390,
+		size: 50,
+		collected: false
+	}
+
+	collectables = [
+	{
+		x_pos: 450,
+		y_pos: 390,
+		size: 50,
+		collected: false
+	},
+	{
+		x_pos: 750,
+		y_pos: 390,
+		size: 50,
+		collected: false
+	},
+	{
+		x_pos: 1000,
+		y_pos: 390,
+		size: 50,
+		collected: false
+	},
+	{
+		x_pos: 1600,
+		y_pos: 390,
+		size: 50,
+		collected: false
+	},
+	{
+		x_pos: 2000,
+		y_pos: 390,
+		size: 50,
+		collected: false
+	}
+]
+
+	mountain = {
+		x_pos: 280,
+		y_pos: 432,
+	}
+
+	clouds = [
+	{
+		x_pos: 150,
+		y_pos: 80,
+		size: 80
+	},
+	{
+		x_pos: 450,
+		y_pos: 80,
+		size: 80
+	},
+	{
+		x_pos: 750,
+		y_pos: 80,
+		size: 80
+	},
+	{
+		x_pos: 1000,
+		y_pos: 80,
+		size: 80
+	}
+]
+
+	canyons = [
+	{
+		x_pos: width - 800,
+		width: 100
+	},
+	{
+		x_pos: width - 200,
+		width: 100
+	}
+]
+
+	trees_x = [100, 350, 500, 700, 900];
+	treePos_y = height/2;
+
+	game_score = 0;
+
+	game_over = false;
+
+	flagpole = {
+		x_pos: 2300,
+		isReached: false
+	}
+}
+
