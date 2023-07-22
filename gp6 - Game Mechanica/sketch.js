@@ -50,6 +50,14 @@ function draw()
 {
 	
 	///////////DRAWING CODE//////////
+	if (flagpole.isReached) {
+		fill(0, 255, 0);
+		textSize(50);
+		text("Level Complete", width/2 - 100, height/2);
+		textSize(30);
+		text("Press space to continue", width/2 - 150, height/2 + 50);
+		return;
+	}
 
 	if (game_over) {
 		fill(255, 0, 0);
@@ -258,7 +266,7 @@ function draw()
 
 function keyPressed()
 {
-	if (game_over && keyCode == 32) {
+	if ((game_over || flagpole.isReached) && keyCode == 32) {
 		startGame();
 		lives = 3;
 	}
