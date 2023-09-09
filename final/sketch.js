@@ -13,6 +13,7 @@ var gameChar_x;
 var gameChar_y;
 var floorPos_y;
 var game_paused;
+let direction_xPos;
 
 let initialPos_y;
 
@@ -78,15 +79,14 @@ function setup()
 	createCanvas(1024, 576);
   backgroundMusic.loop();
 	floorPos_y = height * 3/4;
-
+  direction_xPos = -500;
 	startGame();
 
 	lives = 3;
 }
 
 function draw()
-{
-	
+{	
 	///////////DRAWING CODE//////////
   if (game_paused) {
     return;
@@ -302,6 +302,7 @@ function draw()
 		}
 
 		flagpole.x_pos += 5;
+    direction_xPos += 5;
 		mountain.x_pos += 1;
 	}
 
@@ -327,6 +328,7 @@ function draw()
 		}
 
 		flagpole.x_pos -= 5;
+		direction_xPos -= 5;
 		mountain.x_pos -= 1;
 	}
 
@@ -354,6 +356,8 @@ function draw()
     ellipse(126.6 + (index * 40), 56.6 + 1.5 * sin(value), 20, 20);
     triangle(135 + (index * 40), 62.6 + 1.5 * sin(value), 118 + (index * 40), 80 + 1.5 * sin(value), 102 + (index * 40), 62.6 + 1.5 * sin(value));
   }
+
+  drawDirections();
 }
 
 
@@ -453,11 +457,11 @@ function drawTrees() {
 		fill(139, 69, 19);
 		rect(trees_x[index], treePos_y + 45, 50, 100);
 		fill(0, 145, 0);
-		triangle(trees_x[index] - 30, treePos_y + 50, trees_x[index] + 80, treePos_y + 50, trees_x[index] + 25, treePos_y - 50);
+		triangle(trees_x[index] - 30 + 1.2 * sin(value), treePos_y + 50, trees_x[index] + 80 + .5 * sin(value), treePos_y + 50, trees_x[index] + 25 + 1.2 * sin(value), treePos_y - 50);
 		fill(0, 150, 0);
-		triangle(trees_x[index] - 30, treePos_y + 10, trees_x[index] + 80, treePos_y + 10, trees_x[index] + 25, treePos_y - 80);
+		triangle(trees_x[index] - 30 + 1 * sin(value), treePos_y + 10, trees_x[index] + 80 + 1.1 * sin(value), treePos_y + 10, trees_x[index] + 25+ 1 * sin(value), treePos_y - 80);
 		fill(0, 155, 0);
-		triangle(trees_x[index] - 30, treePos_y - 30, trees_x[index] + 80, treePos_y - 30, trees_x[index] + 25, treePos_y - 110);
+		triangle(trees_x[index] - 30 + .5 * sin(value), treePos_y - 30, trees_x[index] + 80 + 2 * sin(value), treePos_y - 30, trees_x[index] + 25 + .5 * sin(value), treePos_y - 110);
 	}
 }
 
@@ -484,13 +488,13 @@ function drawClouds() {
 	// Draw the clouds.
 	for (let index = 0; index < clouds.length; index++) {
 		fill(255, 255, 255);
-		ellipse(clouds[index].x_pos, clouds[index].y_pos, 80, 80);
-		ellipse(clouds[index].x_pos - 30, clouds[index].y_pos + 10, 60, 60);
-		ellipse(clouds[index].x_pos + 20, clouds[index].y_pos + 5, 70, 70);
-		ellipse(clouds[index].x_pos - 50, clouds[index].y_pos + 20, 40, 40);
-		ellipse(clouds[index].x_pos + 55, clouds[index].y_pos + 5, 70, 70);
-		ellipse(clouds[index].x_pos + 85, clouds[index].y_pos + 10, 50, 50);
-		ellipse(clouds[index].x_pos + 65, clouds[index].y_pos + 10, 60, 60);	
+		ellipse(clouds[index].x_pos, clouds[index].y_pos + .5 * sin(value), 80, 80);
+		ellipse(clouds[index].x_pos - 30, clouds[index].y_pos + 10 + .45 * sin(value), 60, 60);
+		ellipse(clouds[index].x_pos + 20, clouds[index].y_pos + 5 + .5 * sin(value), 70, 70);
+		ellipse(clouds[index].x_pos - 50, clouds[index].y_pos + 20 + .65 * sin(value), 40, 40);
+		ellipse(clouds[index].x_pos + 55, clouds[index].y_pos + 5 + .95 * sin(value), 70, 70);
+		ellipse(clouds[index].x_pos + 85, clouds[index].y_pos + 10 + .85 * sin(value), 50, 50);
+		ellipse(clouds[index].x_pos + 65, clouds[index].y_pos + 10 + .7 * sin(value), 60, 60);	
 	}
 }
 
@@ -794,5 +798,18 @@ function createPlatform(x_pos, y_pos){
   }
 
   return p;
+}
+
+function drawDirections() {
+  // Draw direction post with brown rectangle
+  fill(139,69,19);
+  rect(direction_xPos, floorPos_y - 100, 10, 100);
+  // Draw the sign
+  fill(139,69,19);
+  rect(direction_xPos - 70, floorPos_y - 150, 150, 50);
+  // Draw the text
+  fill(255);
+  textSize(20);
+  text("Wrong way...", direction_xPos - 45, floorPos_y - 120);
 }
 
