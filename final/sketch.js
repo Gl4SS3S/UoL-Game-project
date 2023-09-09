@@ -8,41 +8,38 @@ Game Mechanics
 
 */
 
+// Global variables
 let value = 0;
 var gameChar_x;
 var gameChar_y;
 var floorPos_y;
 var game_paused;
 let direction_xPos;
-
 let initialPos_y;
-
-var canyon;
-var collectable;
 let game_score;
 
-var cloud;
-let flagpole;
-
+// Character states
 let isLeft;
 let isRight;
 let isFalling;
 let isPlummeting;
 let onPlatform;
 
+// Arrays
 let trees_x;
 let treePos_y;
 
+// Objects
 let clouds;
 let mountain;
 let collectables;
 let canyons = [];
-
+let flagpole;
 let enemies = [];
-
 let platforms = [];
 let platform_y;
 
+// Lives
 let lives;
 let game_over;
 
@@ -661,20 +658,6 @@ function startGame() {
 	isFalling = false;
 	isPlummeting = false;
 
-  // Set the canyon object
-	canyon = {
-		x_pos: width - 800, 
-		width: 100
-	}
-
-  // Set the collectable object
-	collectable = {
-		x_pos: 150,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	}
-
   // Set the collectables array
 	collectables = [
 	  {
@@ -845,6 +828,7 @@ function startGame() {
 
 // Function to create the enemy object
 function Enemy(x_pos, y_pos){
+    // Set the enemy properties
     this.x = x_pos;
     this.y = y_pos;
     this.width = 40;
@@ -865,9 +849,10 @@ function Enemy(x_pos, y_pos){
       ellipse(this.x - 10, this.y - 5, 5, 5);
       ellipse(this.x + 10, this.y - 5, 5, 5);
     };
-    
+
     // Move the enemy
     this.move = function(){
+      // Check if the enemy is at the edge of the canyon and change direction
       if (this.direction == 1) {
         this.x += this.x_speed;  
       } else if (this.direction == 2) {
@@ -876,27 +861,35 @@ function Enemy(x_pos, y_pos){
     }
 }
 
+// Function to create the platform object
 function createPlatform(x_pos, y_pos){
   let p = {
+    // Set the platform properties
     x: x_pos,
     y: y_pos,
     width: 100,
+
+    // Draw the platform
     draw: function(){
       fill(255, 0, 0);
       rect(this.x, this.y, this.width, 20);
     }
   }
 
+  // Return the platform object
   return p;
 }
 
+// Function to draw the direction post
 function drawDirections() {
   // Draw direction post with brown rectangle
   fill(139,69,19);
   rect(direction_xPos, floorPos_y - 100, 10, 100);
+
   // Draw the sign
   fill(139,69,19);
   rect(direction_xPos - 70, floorPos_y - 150, 150, 50);
+
   // Draw the text
   fill(255);
   textSize(20);
