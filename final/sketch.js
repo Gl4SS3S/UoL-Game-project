@@ -74,79 +74,103 @@ function preload() {
   jumpSound.setVolume(0.4);
 }
 
+// Setup the game
 function setup()
 {
 	createCanvas(1024, 576);
+
+  // Start looping the background music
   backgroundMusic.loop();
+
+  // Set the initial position of the floor
 	floorPos_y = height * 3/4;
+
+  // Set the initial position of the direction board
   direction_xPos = -500;
 	startGame();
 
+  // Initialize the lives
 	lives = 3;
 }
 
+// Draw each frame
 function draw()
 {	
 	///////////DRAWING CODE//////////
+  // If game is paused, exit the draw function
   if (game_paused) {
     return;
   }
 
+  // Check if the flagpole has been reached
 	if (flagpole.isReached) {
 		fill(0, 255, 0);
 		textSize(50);
+
+     // Display "Level Complete" text at the center of the screen
 		text("Level Complete", width/2 - 100, height/2);
 		textSize(30);
 		text("Press space to continue", width/2 - 150, height/2 + 50);
 		return;
 	}
 
+  // Check if the game is over
 	if (game_over) {
 		fill(255, 0, 0);
 		textSize(50);
+
+    // Display "Game Over" text at the center of the screen
 		text("Game Over", width/2 - 100, height/2);
 		textSize(30);
 		text("Press space to continue", width/2 - 150, height/2 + 50);
 		return;
 	}
 
+  // Set the background color
 	background(100,155,255); //fill the sky blue
 
-	// Check if mountain is on screen
+	// Draw mountains.
 	drawMountains();
 
-	// Check if clouds are on screen and alter the array accordingly
+	// Draw clouds.
 	drawClouds();
 
 	// Check if trees are on screen and alter the array accordingly
 	drawTrees();
 
-
+  // Draw the platforms
   for (let index = 0; index < platforms.length; index++) {
     platforms[index].draw();  
   }
 
+  // Draw the ground
 	noStroke();
 	fill(0,155,0);
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 	
+  // Draw the canyons
   drawCanyons();
 
 	// Draw the collectable items
 	for (let index = 0; index < collectables.length; index++) {
+    // Check if collectable was collected and play sound
 		if (dist(gameChar_x, gameChar_y, collectables[index].x_pos, collectables[index].y_pos) < 50) {
 			collectables[index].collected = true;
       collectableSound.play();
 		}
+    // Draw collectable
 		drawCollectable(collectables[index]);
 
+    // Check if collectable was collected and add to score
 		if (collectables[index].collected == true) {
 			game_score += 1;
 			collectables.splice(index, 1);
 		}
 	}
 
+  // Check if the player is on a platform
   for (let index = 0; index < platforms.length; index++) {
+    // Check if player is on platform
 		if (gameChar_x + 12 > platforms[index].x && gameChar_x - 12 < platforms[index].x + platforms[index].width && gameChar_y <= platforms[index].y) {
 			onPlatform = true;
       platform_y = platforms[index].y;
@@ -156,8 +180,8 @@ function draw()
 		}
 	}
 
+  // Check if the player is on a canyon and set isPlummeting to true
   for (let index = 0; index < canyons.length; index++) {
-    
     if (gameChar_x - 13 > canyons[index].x_pos && gameChar_x + 13 < canyons[index].x_pos + canyons[index].width && !onPlatform) {
       isPlummeting = true;
       break;
@@ -166,6 +190,7 @@ function draw()
     }
   }
 
+  // Check if the player is on a platform and set isFalling to false
   for (let index = 0; index < enemies.length; index++) {
     enemies[index].draw();
     enemies[index].move();
@@ -179,9 +204,12 @@ function draw()
     }
   }
 
+  // Check the conditions for the enemies to kill the player
 	checkPlayerDie();
 
+  // Check if the player is on the flagpole
 	checkFlagpole();
+
 	// Draw the flagpole
 	renderFlagpole();
 
@@ -308,30 +336,38 @@ function draw()
 
 	// If character is moving right, move the scenery to the left
 	if (isRight == true) {
+    // Move the scenery to the left
 		for (let index = 0; index < trees_x.length; index++) {
 			trees_x[index] -= 5;
 		}
+    // Move the clouds to the left
 		for (let index = 0; index < clouds.length; index++) {
 			clouds[index].x_pos -= 3;
 		}
+    // Move the collectables to the left
 		for (let index = 0; index < collectables.length; index++) {
 			collectables[index].x_pos -= 5;
 		}
+    // Move the canyons to the left
 		for (let index = 0; index < canyons.length; index++) {
 			canyons[index].x_pos -= 5;
 		}
+    // Move the platforms to the left
     for (let index = 0; index < platforms.length; index++) {
 			platforms[index].x -= 5;
 		}
+    // Move the enemies to the left
     for (let index = 0; index < enemies.length; index++) {
 			enemies[index].x -= 5;
 		}
 
+    // Move the flagpole to the left
 		flagpole.x_pos -= 5;
 		direction_xPos -= 5;
 		mountain.x_pos -= 1;
 	}
 
+  // If character is falling, move the character down
 	if (gameChar_y < floorPos_y && (isFalling) && (!onPlatform || gameChar_y < platform_y - 5)) {
 		gameChar_y += 0.35 * deltaTime;
 	} else if (gameChar_y < floorPos_y && !onPlatform) {
@@ -343,12 +379,18 @@ function draw()
 		isPlummeting = false;
 	}
 
+  // Set the text size
 	textSize(30);
-	// Green text
+
+	// Green text that displays the game score
 	fill(0, 255, 0);
 	text('Game Score: ' + game_score, 10, 30);
+
+  // Red text that displays the number of lives
 	fill(255, 0, 0);
 	text('Lives: ', 10, 70);
+
+  // Draw hearts for the number of lives
   for (let index = 0; index < lives; index++) {
     fill(255, 0, 0);
     // Draw heart
@@ -357,18 +399,20 @@ function draw()
     triangle(135 + (index * 40), 62.6 + 1.5 * sin(value), 118 + (index * 40), 80 + 1.5 * sin(value), 102 + (index * 40), 62.6 + 1.5 * sin(value));
   }
 
+  // Draw the directions when player goes in the wrong direction
   drawDirections();
 }
 
 
 function keyPressed()
 {
+  // Starts the game over when space is pressed and the game is over
 	if ((game_over || flagpole.isReached) && keyCode == 32) {
 		startGame();
 		lives = 3;
 	}
 
-  // Pause game
+  // Pause game when escape key is pressed
   if (keyCode == 27) {
     console.log("Game Paused");
     game_paused = !game_paused;
@@ -377,18 +421,21 @@ function keyPressed()
 	// if statements to control the animation of the character when
 	// keys are pressed.
 	if (!isPlummeting) {
+    // Check if Left (D) key is pressed
 		if (keyCode == 65) {
 			isLeft = true;
 			console.log("Left Key Pressed");
 			console.log("isLeft: " + isLeft);
 		}
 	
+    // Check if Right (A) key is pressed
 		if (keyCode == 68) {
 			isRight = true;
 			console.log("Right Key Pressed");
 			console.log("isRight: " + isRight);
 		}
 	
+    // Check if character is on platform or on the ground
 		if (keyCode == 87 && isFalling == false) {
 			gameChar_y -= 140;
 			isFalling = true;
@@ -401,17 +448,19 @@ function keyPressed()
 	}
 }
 
+// Check which key is released and the set the animation states for the character
 function keyReleased()
 {
 	// if statements to control the animation of the character when
 	// keys are released.
-
+  // Check if Left (D) key is released
 	if (keyCode == 65) {
 		isLeft = false;
 		console.log("Left Key Released");
 		console.log("isLeft: " + isLeft);
 	}
 
+  // Check if Right (A) key is released
 	if (keyCode == 68) {
 		isRight = false;
 		console.log("Right Key Released");
@@ -419,7 +468,9 @@ function keyReleased()
 	}
 }
 
+// Function to draw the mountains objects.
 function drawMountains() {
+  // Manipulate the mountain object to check if it is on screen
 	if (mountain.x_pos < -500) {
 		mountain.x_pos = width + 10;
 	} else if (mountain.x_pos > width + 550) {
@@ -441,7 +492,9 @@ function drawMountains() {
 	triangle(mountain.x_pos + 144, mountain.y_pos - 280, mountain.x_pos + 206, mountain.y_pos - 250, mountain.x_pos + 170, mountain.y_pos - 332);
 }
 
+// Function to draw tree objects and check if they are on screen
 function drawTrees() {
+  // Manipulate the array to check if trees are on screen
 	for (let index = 0; index < trees_x.length; index++) {
 		if (trees_x[index] < -100) {
 			trees_x.splice(0, 1);
@@ -453,6 +506,7 @@ function drawTrees() {
 		}
 	}
 
+  // Draw the trees.
 	for (let index = 0; index < trees_x.length; index++) {
 		fill(139, 69, 19);
 		rect(trees_x[index], treePos_y + 45, 50, 100);
@@ -465,7 +519,9 @@ function drawTrees() {
 	}
 }
 
+// Function to draw the clouds objects and check if they are on screen
 function drawClouds() {
+  // Manipulate the array to check if clouds are on screen
 	for (let index = 0; index < clouds.length; index++) {
 		if (clouds[index].x_pos < -100) {
 			clouds.splice(0, 1);
@@ -498,6 +554,7 @@ function drawClouds() {
 	}
 }
 
+// Function to draw the collectable objects
 function drawCollectable(t_collectable){
 	if (!t_collectable.collected) {
 		fill(255, 215, 0);
@@ -509,9 +566,11 @@ function drawCollectable(t_collectable){
 		fill(255, 255, 0);
 		ellipse(t_collectable.x_pos, t_collectable.y_pos + 2.5 * sin(value), t_collectable.size - 30, t_collectable.size - 30);
 	}
+  // Set the value for the sin function
   value += deltaTime * 0.001;
 }
 
+// Function to draw the canyons objects
 function drawCanyons() {
   for (let index = 0; index < canyons.length; index++) {
 	  //Brown rectangle going to the botton of the screen
@@ -520,7 +579,9 @@ function drawCanyons() {
   }
 }
 
+// Function to draw the flagpole
 function renderFlagpole() {
+  // Draw flagpole
 	push();
 	strokeWeight(15);
 	stroke(220);
@@ -534,12 +595,14 @@ function renderFlagpole() {
 	noStroke();
 	rect(flagpole.x_pos, floorPos_y - 250, 50, 40);
 
+  // Check if the flagpole has been reached and draw the flag
 	if (flagpole.isReached) {
 		fill(0, 255, 0);
 		rect(flagpole.x_pos, floorPos_y - 250, 50, 40);
 	}
 }
 
+// Function to check if the player is on the flagpole
 function checkFlagpole() {
 	if (flagpole.isReached == true) {
 		return;
@@ -552,7 +615,9 @@ function checkFlagpole() {
 	}
 }
 
+// Function to check if the player is dead
 function checkPlayerDie() {
+  // Check if the player off the screen and set game_over to true if lives are 0
 	if (gameChar_y - 150 > height) {
 		lives -= 1;
 		if (lives > 0) {
@@ -564,6 +629,7 @@ function checkPlayerDie() {
 		}
 	}
 
+  // Check if the player is touching an enemy and set game_over to true if lives are 0
   for (let index = 0; index < enemies.length; index++) {
     if (dist(gameChar_x, gameChar_y, enemies[index].x, enemies[index].y) < 20) {
       lives -= 1;
@@ -578,23 +644,30 @@ function checkPlayerDie() {
   }
 }
 
+
+// Function to initialize the game
 function startGame() {
+  // Set the platforms and enemies arrays to empty
   platforms=[];
   enemies=[];
 
+  // Set the game character position
 	gameChar_x = width/2;
 	gameChar_y = floorPos_y;
 
+  // Set the game character states
 	isLeft = false;
 	isRight = false;
 	isFalling = false;
 	isPlummeting = false;
 
+  // Set the canyon object
 	canyon = {
 		x_pos: width - 800, 
 		width: 100
 	}
 
+  // Set the collectable object
 	collectable = {
 		x_pos: 150,
 		y_pos: 390,
@@ -602,132 +675,140 @@ function startGame() {
 		collected: false
 	}
 
+  // Set the collectables array
 	collectables = [
-	{
-		x_pos: 450,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 750,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 1000,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 1600,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-	{
-		x_pos: 2000,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-  {
-		x_pos: 2400,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-  {
-		x_pos: 2800,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-  {
-		x_pos: 3200,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	},
-  {
-		x_pos: 3640,
-		y_pos: 390,
-		size: 50,
-		collected: false
-	}
-]
+	  {
+	  	x_pos: 450,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+	  {
+	  	x_pos: 750,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+	  {
+	  	x_pos: 1000,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+	  {
+	  	x_pos: 1600,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+	  {
+	  	x_pos: 2000,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+    {
+	  	x_pos: 2400,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+    {
+	  	x_pos: 2800,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+    {
+	  	x_pos: 3200,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  },
+    {
+	  	x_pos: 3640,
+	  	y_pos: 390,
+	  	size: 50,
+	  	collected: false
+	  }
+  ]
 
+  // Set the mountain object
 	mountain = {
 		x_pos: 280,
 		y_pos: 432,
 	}
 
+  // Set the clouds array
 	clouds = [
-	{
-		x_pos: 150,
-		y_pos: 80,
-		size: 80
-	},
-	{
-		x_pos: 450,
-		y_pos: 80,
-		size: 80
-	},
-	{
-		x_pos: 750,
-		y_pos: 80,
-		size: 80
-	},
-	{
-		x_pos: 1000,
-		y_pos: 80,
-		size: 80
-	}
-]
+	  {
+	  	x_pos: 150,
+	  	y_pos: 80,
+	  	size: 80
+	  },
+	  {
+	  	x_pos: 450,
+	  	y_pos: 80,
+	  	size: 80
+	  },
+	  {
+	  	x_pos: 750,
+	  	y_pos: 80,
+	  	size: 80
+	  },
+	  {
+	  	x_pos: 1000,
+	  	y_pos: 80,
+	  	size: 80
+	  }
+  ]
 
+  // Set the canyons array
 	canyons = [
-	{
-		x_pos: width - 800,
-		width: 100
-	},
-	{
-		x_pos: width - 200,
-		width: 100
-	},
-  {
-		x_pos: width + 400,
-		width: 100
-	},
-	{
-		x_pos: width + 1000,
-		width: 100
-	},
-  {
-		x_pos: width + 1400,
-		width: 100
-	},
-	{
-		x_pos: width + 2000,
-		width: 100
-	},{
-		x_pos: width + 2600,
-		width: 100
-	},
-	{
-		x_pos: width + 3200,
-		width: 100
-	}
-]
+	  {
+	  	x_pos: width - 800,
+	  	width: 100
+	  },
+	  {
+	  	x_pos: width - 200,
+	  	width: 100
+	  },
+    {
+	  	x_pos: width + 400,
+	  	width: 100
+	  },
+	  {
+	  	x_pos: width + 1000,
+	  	width: 100
+	  },
+    {
+	  	x_pos: width + 1400,
+	  	width: 100
+	  },
+	  {
+	  	x_pos: width + 2000,
+	  	width: 100
+	  },{
+	  	x_pos: width + 2600,
+	  	width: 100
+	  },
+	  {
+	  	x_pos: width + 3200,
+	  	width: 100
+	  }
+  ]
 
+  // Set the trees array
 	trees_x = [100, 350, 500, 700, 900];
 	treePos_y = height/2;
 
+  // Set the game score
 	game_score = 0;
 
+  // Set the game over state
 	game_over = false;
 
+  // Set the flagpole object
 	flagpole = {
 		x_pos: 4300,
 		isReached: false
@@ -735,9 +816,12 @@ function startGame() {
 
   let previousPlatform;
 
+  // Create the platforms array with random x and y positions
   for (let index = 0; index < 100; index++) {
+    // Create a random number between 0 and 1
     let probability = random(0, 1);
 
+    // Create a platform if the probability is greater than 0.80
     if (probability > 0.80 && previousPlatform != undefined) {
       let p = createPlatform(random(previousPlatform.x + previousPlatform.width + 20, previousPlatform.x + previousPlatform.width  + 40), random(previousPlatform.y - 40, previousPlatform.y - 80));
       platforms.push(p);
@@ -752,12 +836,14 @@ function startGame() {
     }
   }
 
+  // Create the enemies array based on the canyons array
   for (let index = 0; index < canyons.length; index++) {
     let e = new Enemy(canyons[index].x_pos + canyons[index].width, floorPos_y - 10);
     enemies.push(e);
   }
 }
 
+// Function to create the enemy object
 function Enemy(x_pos, y_pos){
     this.x = x_pos;
     this.y = y_pos;
@@ -765,6 +851,8 @@ function Enemy(x_pos, y_pos){
     this.height = 40;
     this.x_speed = random(1, 3);
     this.direction = 1;
+
+    // Draw the enemy
     this.draw = function(){
       fill(255, 0, 0);
       ellipse(this.x, this.y, this.width, this.height);
@@ -777,6 +865,8 @@ function Enemy(x_pos, y_pos){
       ellipse(this.x - 10, this.y - 5, 5, 5);
       ellipse(this.x + 10, this.y - 5, 5, 5);
     };
+    
+    // Move the enemy
     this.move = function(){
       if (this.direction == 1) {
         this.x += this.x_speed;  
