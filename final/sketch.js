@@ -45,9 +45,21 @@ let platform_y;
 let lives;
 let game_over;
 
+// Sounds
+let backgroundMusic;
+
+function preload() {
+  soundFormats('mp3', 'ogg');
+
+  // Load sounds
+  backgroundMusic = loadSound('sounds/background.mp3');
+  backgroundMusic.setVolume(0.1);
+}
+
 function setup()
 {
 	createCanvas(1024, 576);
+  backgroundMusic.loop();
 	floorPos_y = height * 3/4;
 
 	startGame();
@@ -316,7 +328,14 @@ function draw()
 	fill(0, 255, 0);
 	text('Game Score: ' + game_score, 10, 30);
 	fill(255, 0, 0);
-	text('Lives: ' + lives, 10, 60);
+	text('Lives: ', 10, 70);
+  for (let index = 0; index < lives; index++) {
+    fill(255, 0, 0);
+    // Draw heart
+    ellipse(110 + (index * 40), 56.6 + 1.5 * sin(value), 20, 20);
+    ellipse(126.6 + (index * 40), 56.6 + 1.5 * sin(value), 20, 20);
+    triangle(135 + (index * 40), 62.6 + 1.5 * sin(value), 118 + (index * 40), 80 + 1.5 * sin(value), 102 + (index * 40), 62.6 + 1.5 * sin(value));
+  }
 }
 
 
