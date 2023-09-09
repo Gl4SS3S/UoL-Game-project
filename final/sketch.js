@@ -47,13 +47,30 @@ let game_over;
 
 // Sounds
 let backgroundMusic;
+let diedSound;
+let gameOverSound;
+let completedSound;
+let collectableSound;
+let jumpSound;
 
 function preload() {
-  soundFormats('mp3', 'ogg');
+  soundFormats('mp3', 'ogg', 'wav');
 
   // Load sounds
   backgroundMusic = loadSound('sounds/background.mp3');
+  diedSound = loadSound('sounds/died.wav');
+  gameOverSound = loadSound('sounds/game-over.wav');
+  completedSound = loadSound('sounds/completed.wav');
+  collectableSound = loadSound('sounds/collectable.wav');
+  jumpSound = loadSound('sounds/jump.wav');
+
+  // Set volume
   backgroundMusic.setVolume(0.1);
+  diedSound.setVolume(0.4);
+  gameOverSound.setVolume(0.4);
+  completedSound.setVolume(0.4);
+  collectableSound.setVolume(0.4);
+  jumpSound.setVolume(0.4);
 }
 
 function setup()
@@ -119,6 +136,7 @@ function draw()
 	for (let index = 0; index < collectables.length; index++) {
 		if (dist(gameChar_x, gameChar_y, collectables[index].x_pos, collectables[index].y_pos) < 50) {
 			collectables[index].collected = true;
+      collectableSound.play();
 		}
 		drawCollectable(collectables[index]);
 
@@ -370,6 +388,7 @@ function keyPressed()
 		if (keyCode == 87 && isFalling == false) {
 			gameChar_y -= 140;
 			isFalling = true;
+      jumpSound.play();
 			console.log("Jumped");
 			console.log("isFalling: " + isFalling);
 		} else {
@@ -525,6 +544,7 @@ function checkFlagpole() {
 	// If character is at flagpole, set flagpole.isReached to true
 	if (gameChar_x > flagpole.x_pos && gameChar_x < flagpole.x_pos + 50) {
 		flagpole.isReached = true;
+    completedSound.play();
 	}
 }
 
@@ -533,8 +553,10 @@ function checkPlayerDie() {
 		lives -= 1;
 		if (lives > 0) {
 			startGame();
+      diedSound.play();
 		} else {
 			game_over = true;
+      gameOverSound.play();
 		}
 	}
 
@@ -543,8 +565,10 @@ function checkPlayerDie() {
       lives -= 1;
       if (lives > 0) {
         startGame();
+        diedSound.play();
       } else {
         game_over = true;
+        gameOverSound.play();
       }
     }
   }
