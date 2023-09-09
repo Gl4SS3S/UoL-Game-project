@@ -8,7 +8,7 @@ Game Mechanics
 
 */
 
-
+let value = 0;
 var gameChar_x;
 var gameChar_y;
 var floorPos_y;
@@ -50,31 +50,7 @@ function setup()
 	createCanvas(1024, 576);
 	floorPos_y = height * 3/4;
 
-  let previousPlatform;
-	
 	startGame();
-
-  for (let index = 0; index < 100; index++) {
-    let probability = random(0, 1);
-
-    if (probability > 0.80 && previousPlatform != undefined) {
-      let p = createPlatform(random(previousPlatform.x + previousPlatform.width + 20, previousPlatform.x + previousPlatform.width  + 40), random(previousPlatform.y - 40, previousPlatform.y - 80));
-      platforms.push(p);
-      previousPlatform = p;
-    } else if(previousPlatform == undefined) {
-      let p = createPlatform(random(width/2 - 20, width/2 +30), random(floorPos_y - 70, floorPos_y - 80));
-      platforms.push(p);
-      previousPlatform = p;
-    } else {
-      let p = createPlatform(random(previousPlatform.x + previousPlatform.width + 20, previousPlatform.x + previousPlatform.width  + 30), random(floorPos_y - 40, floorPos_y - 45));
-      previousPlatform = p;
-    }
-  }
-
-  for (let index = 0; index < canyons.length; index++) {
-    let e = new Enemy(canyons[index].x_pos + canyons[index].width, floorPos_y - 10);
-    enemies.push(e);
-  }
 
 	lives = 3;
 }
@@ -116,6 +92,7 @@ function draw()
 	// Check if trees are on screen and alter the array accordingly
 	drawTrees();
 
+
   for (let index = 0; index < platforms.length; index++) {
     platforms[index].draw();  
   }
@@ -124,6 +101,8 @@ function draw()
 	fill(0,155,0);
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 	
+  drawCanyons();
+
 	// Draw the collectable items
 	for (let index = 0; index < collectables.length; index++) {
 		if (dist(gameChar_x, gameChar_y, collectables[index].x_pos, collectables[index].y_pos) < 50) {
@@ -148,7 +127,7 @@ function draw()
 	}
 
   for (let index = 0; index < canyons.length; index++) {
-    drawCanyon(canyons[index]);
+    
     if (gameChar_x - 13 > canyons[index].x_pos && gameChar_x + 13 < canyons[index].x_pos + canyons[index].width && !onPlatform) {
       isPlummeting = true;
       break;
@@ -321,10 +300,6 @@ function draw()
 		mountain.x_pos -= 1;
 	}
 
-  // Draw dot at position of character
-  fill(255, 255, 0);
-  ellipse(gameChar_x, gameChar_y - 10, 10, 10);
-
 	if (gameChar_y < floorPos_y && (isFalling) && (!onPlatform || gameChar_y < platform_y - 5)) {
 		gameChar_y += 0.35 * deltaTime;
 	} else if (gameChar_y < floorPos_y && !onPlatform) {
@@ -484,28 +459,23 @@ function drawClouds() {
 function drawCollectable(t_collectable){
 	if (!t_collectable.collected) {
 		fill(255, 215, 0);
-		ellipse(t_collectable.x_pos, t_collectable.y_pos, t_collectable.size, t_collectable.size);
+		ellipse(t_collectable.x_pos, t_collectable.y_pos + 2.5 * sin(value), t_collectable.size, t_collectable.size);
 		fill(255, 255, 0);
-		ellipse(t_collectable.x_pos, t_collectable.y_pos, t_collectable.size - 10, t_collectable.size - 10);
+		ellipse(t_collectable.x_pos, t_collectable.y_pos + 2.5 * sin(value), t_collectable.size - 10, t_collectable.size - 10);
 		fill(255, 215, 0);
-		ellipse(t_collectable.x_pos, t_collectable.y_pos, t_collectable.size - 20, t_collectable.size - 20);
+		ellipse(t_collectable.x_pos, t_collectable.y_pos + 2.5 * sin(value), t_collectable.size - 20, t_collectable.size - 20);
 		fill(255, 255, 0);
-		ellipse(t_collectable.x_pos, t_collectable.y_pos, t_collectable.size - 30, t_collectable.size - 30);
+		ellipse(t_collectable.x_pos, t_collectable.y_pos + 2.5 * sin(value), t_collectable.size - 30, t_collectable.size - 30);
 	}
+  value += deltaTime * 0.001;
 }
 
-function drawCanyon(t_canyon) {
-	// Check if canyon is on screen
-	if (t_canyon.x_pos < -150) {
-		t_canyon.x_pos = width + 10;
-	} else if (t_canyon.x_pos > width + 150) {
-		t_canyon.x_pos = -50;
-	}
-
-	// Draw a canyon - brown rectangle
-	fill(139,69,19);
-	//Brown rectangle going to the botton of the screen
-	rect(t_canyon.x_pos, 432, t_canyon.width, 144);
+function drawCanyons() {
+  for (let index = 0; index < canyons.length; index++) {
+	  //Brown rectangle going to the botton of the screen
+    fill(139,69,19);
+	  rect(canyons[index].x_pos, 432, canyons[index].width, 144);
+  }
 }
 
 function renderFlagpole() {
@@ -548,9 +518,23 @@ function checkPlayerDie() {
 			game_over = true;
 		}
 	}
+
+  for (let index = 0; index < enemies.length; index++) {
+    if (dist(gameChar_x, gameChar_y, enemies[index].x, enemies[index].y) < 20) {
+      lives -= 1;
+      if (lives > 0) {
+        startGame();
+      } else {
+        game_over = true;
+      }
+    }
+  }
 }
 
 function startGame() {
+  platforms=[];
+  enemies=[];
+
 	gameChar_x = width/2;
 	gameChar_y = floorPos_y;
 
@@ -664,6 +648,29 @@ function startGame() {
 	{
 		x_pos: width - 200,
 		width: 100
+	},
+  {
+		x_pos: width + 400,
+		width: 100
+	},
+	{
+		x_pos: width + 1000,
+		width: 100
+	},
+  {
+		x_pos: width + 1400,
+		width: 100
+	},
+	{
+		x_pos: width + 2000,
+		width: 100
+	},{
+		x_pos: width + 2600,
+		width: 100
+	},
+	{
+		x_pos: width + 3200,
+		width: 100
 	}
 ]
 
@@ -678,6 +685,30 @@ function startGame() {
 		x_pos: 4300,
 		isReached: false
 	}
+
+  let previousPlatform;
+
+  for (let index = 0; index < 100; index++) {
+    let probability = random(0, 1);
+
+    if (probability > 0.80 && previousPlatform != undefined) {
+      let p = createPlatform(random(previousPlatform.x + previousPlatform.width + 20, previousPlatform.x + previousPlatform.width  + 40), random(previousPlatform.y - 40, previousPlatform.y - 80));
+      platforms.push(p);
+      previousPlatform = p;
+    } else if(previousPlatform == undefined) {
+      let p = createPlatform(random(width/2 - 20, width/2 +30), random(floorPos_y - 70, floorPos_y - 80));
+      platforms.push(p);
+      previousPlatform = p;
+    } else {
+      let p = createPlatform(random(previousPlatform.x + previousPlatform.width + 20, previousPlatform.x + previousPlatform.width  + 30), random(floorPos_y - 40, floorPos_y - 45));
+      previousPlatform = p;
+    }
+  }
+
+  for (let index = 0; index < canyons.length; index++) {
+    let e = new Enemy(canyons[index].x_pos + canyons[index].width, floorPos_y - 10);
+    enemies.push(e);
+  }
 }
 
 function Enemy(x_pos, y_pos){
