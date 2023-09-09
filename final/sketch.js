@@ -12,6 +12,7 @@ Game Mechanics
 var gameChar_x;
 var gameChar_y;
 var floorPos_y;
+var game_paused;
 
 let initialPos_y;
 
@@ -34,7 +35,9 @@ let treePos_y;
 let clouds;
 let mountain;
 let collectables;
-let canyons;
+let canyons = [];
+
+let enemies = [];
 
 let platforms = [];
 let platform_y;
@@ -48,6 +51,8 @@ function setup()
 	floorPos_y = height * 3/4;
 
   let previousPlatform;
+	
+	startGame();
 
   for (let index = 0; index < 100; index++) {
     let probability = random(0, 1);
@@ -65,9 +70,11 @@ function setup()
       previousPlatform = p;
     }
   }
-   
-	
-	startGame();
+
+  for (let index = 0; index < canyons.length; index++) {
+    let e = new Enemy(canyons[index].x_pos + canyons[index].width, floorPos_y - 10);
+    enemies.push(e);
+  }
 
 	lives = 3;
 }
@@ -76,6 +83,10 @@ function draw()
 {
 	
 	///////////DRAWING CODE//////////
+  if (game_paused) {
+    return;
+  }
+
 	if (flagpole.isReached) {
 		fill(0, 255, 0);
 		textSize(50);
@@ -143,6 +154,19 @@ function draw()
       break;
     } else {
       isPlummeting = false;
+    }
+  }
+
+  for (let index = 0; index < enemies.length; index++) {
+    enemies[index].draw();
+    enemies[index].move();
+
+    for (let index2 = 0; index2 < canyons.length; index2++) {
+      if ((dist(enemies[index].x, enemies[index].y, canyons[index2].x_pos, floorPos_y) < 20)) {
+        enemies[index].direction = 2;
+      } else if (dist(enemies[index].x, enemies[index].y, canyons[index2].x_pos + canyons[index2].width, floorPos_y) < 20) {
+        enemies[index].direction = 1;
+      }
     }
   }
 
@@ -264,6 +288,9 @@ function draw()
     for (let index = 0; index < platforms.length; index++) {
 			platforms[index].x += 5;
 		}
+    for (let index = 0; index < enemies.length; index++) {
+			enemies[index].x += 5;
+		}
 
 		flagpole.x_pos += 5;
 		mountain.x_pos += 1;
@@ -285,6 +312,9 @@ function draw()
 		}
     for (let index = 0; index < platforms.length; index++) {
 			platforms[index].x -= 5;
+		}
+    for (let index = 0; index < enemies.length; index++) {
+			enemies[index].x -= 5;
 		}
 
 		flagpole.x_pos -= 5;
@@ -321,6 +351,13 @@ function keyPressed()
 		startGame();
 		lives = 3;
 	}
+
+  // Pause game
+  if (keyCode == 27) {
+    console.log("Game Paused");
+    game_paused = !game_paused;
+  }
+
 	// if statements to control the animation of the character when
 	// keys are pressed.
 	if (!isPlummeting) {
@@ -467,7 +504,7 @@ function drawCanyon(t_canyon) {
 
 	// Draw a canyon - brown rectangle
 	fill(139,69,19);
-	//blue rectangle going to the botton of the screen
+	//Brown rectangle going to the botton of the screen
 	rect(t_canyon.x_pos, 432, t_canyon.width, 144);
 }
 
@@ -641,6 +678,34 @@ function startGame() {
 		x_pos: 4300,
 		isReached: false
 	}
+}
+
+function Enemy(x_pos, y_pos){
+    this.x = x_pos;
+    this.y = y_pos;
+    this.width = 40;
+    this.height = 40;
+    this.x_speed = random(1, 3);
+    this.direction = 1;
+    this.draw = function(){
+      fill(255, 0, 0);
+      ellipse(this.x, this.y, this.width, this.height);
+      // Eye whites
+      fill(255);
+      ellipse(this.x - 10, this.y - 5, 20, 20);
+      ellipse(this.x + 10, this.y - 5, 20, 20);
+      // Eyes
+      fill(0);
+      ellipse(this.x - 10, this.y - 5, 5, 5);
+      ellipse(this.x + 10, this.y - 5, 5, 5);
+    };
+    this.move = function(){
+      if (this.direction == 1) {
+        this.x += this.x_speed;  
+      } else if (this.direction == 2) {
+        this.x -= this.x_speed;
+      }
+    }
 }
 
 function createPlatform(x_pos, y_pos){
